@@ -1,0 +1,40 @@
+﻿@model Zoolirante_Open_Minded.Models.Membership
+
+@{
+    ViewData["Title"] = "Membership Status";
+}
+
+<h2 class="custom-large-title">Membership Status</h2>
+
+@if (Model == null)
+{
+    <p>You do not have a membership yet.</p>
+}
+else
+{
+    <p>
+        Valid from: @Model.StartDate.ToUniversalTime().ToString("yyyy-MM-dd") →
+        <b>@Model.EndDate.ToUniversalTime().ToString("yyyy-MM-dd")</b>
+    </p>
+    <p>
+        Status:
+        <b class="@(Model.EndDate.ToUniversalTime() > DateTime.UtcNow ? "text-success" : "text-danger")">
+            @(Model.EndDate.ToUniversalTime() > DateTime.UtcNow ? "Active" : "Expired")
+        </b>
+    </p>
+
+    @if (Model.EndDate >= DateTime.Now)
+    {
+        <form asp-action="Cancel" method="post" class="mt-2">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Cancel Membership</button>
+        </form>
+    }
+}
+
+<a class="normal-button" asp-action="Join"> Purchase/Renew </a>
+
+@if (TempData["Message"] != null)
+{
+    <p class="text-success mt-2">@TempData["Message"]</p>
+}

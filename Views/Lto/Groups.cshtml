@@ -1,0 +1,27 @@
+﻿@model List<Zoolirante_Open_Minded.ViewModels.LtoGroupVM>
+@{
+    ViewData["Title"] = "Articles to Fill";
+}
+<div class="container mt-3">
+    <h2>Articles to Fill (@Model.Count)</h2>
+    <div class="list-group shadow-sm">
+        @foreach (var g in Model)
+        {
+            <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+               asp-action="Pick" asp-route-group="@g.GroupKey">
+                <div>
+                    <div class="fw-semibold">@g.GroupKey</div>
+                    <div class="text-muted small">(@g.NumArticles articles)</div>
+                </div>
+                <div class="text-end">
+                    <div class="badge text-bg-warning">Total EA: @g.TotalEA</div>
+                    <span class="ms-3 text-decoration-underline">Start →</span>
+                </div>
+            </a>
+        }
+    </div>
+    <div class="d-flex gap-2 mt-3">
+        <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+        <a class="btn btn-outline-danger">End Pick</a>
+    </div>
+</div>

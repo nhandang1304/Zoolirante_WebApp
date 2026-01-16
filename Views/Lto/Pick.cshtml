@@ -1,0 +1,47 @@
+﻿@model Zoolirante_Open_Minded.ViewModels.LtoPickVM
+@{
+    ViewData["Title"] = $"Pick from {Model.GroupKey}";
+}
+
+<form asp-action="ApplyPick" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="GroupKey" value="@Model.GroupKey" />
+
+    <div class="container mt-3">
+        <h2 class="mb-3">Pick from @Model.GroupKey</h2>
+
+        @for (var i = 0; i < Model.Lines.Count; i++)
+        {
+            var line = Model.Lines[i];
+            <div class="d-flex align-items-center justify-content-between border-bottom py-2">
+                <div class="me-3">
+                    <div class="fw-semibold">@line.Name</div>
+                    <div class="text-muted small">
+                        SOH: <strong>@line.Stock</strong>  |
+                        CAP: <strong>@line.ShelfCapacity</strong>  |
+                        On shelf: <strong>@line.CurrentShelf</strong>  |
+                        Need: <strong>@line.Needed</strong>
+                        @* If you still want to show bulk as a derived note, uncomment: *@
+                        @* | Bulk (derived): @line.Bulk *@
+                    </div>
+                </div>
+
+                <div class="ms-3">
+                    <div class="input-group input-group-sm" style="width:110px">
+                        <span class="input-group-text">Fill Qty</span>
+                        <input class="form-control text-center"
+                               type="number" min="0" max="@line.Needed"
+                               name="Lines[@i].Qty"
+                               value="@line.FillQty" />
+                        <input type="hidden" name="Lines[@i].ProductId" value="@line.ProductId" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-warning">Finish this Location</button>
+            <a asp-action="Groups" class="btn btn-outline-secondary">Back</a>
+        </div>
+    </div>
+</form>

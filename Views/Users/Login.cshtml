@@ -1,0 +1,245 @@
+﻿@model Zoolirante_Open_Minded.Models.User
+@{
+    ViewData["Title"] = "Account Logon";
+}
+
+<style>
+    /* Page-scoped only */
+    .login-wrap {
+        max-width: 840px;
+        margin: 24px auto 64px;
+    }
+
+    .page-title {
+        font-weight: 800;
+        font-size: 2.25rem;
+        color: #3a3a3a;
+    }
+
+    .section-title {
+        font-weight: 800;
+        color: #2e7d32;
+        font-size: 1.35rem;
+    }
+
+    .lead-muted {
+        color: #6c757d;
+    }
+
+    .card-glass {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,.06);
+        box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    .input-lg {
+        height: 48px;
+        font-size: 1.05rem;
+    }
+
+    .btn-green {
+        background: #6db400;
+        border-color: #6db400;
+        color: #fff;
+        font-weight: 700;
+    }
+
+        .btn-green:hover {
+            background: #5da000;
+            border-color: #5da000;
+            color: #fff;
+        }
+
+    .help-link {
+        color: #2e7d32;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .help-link:hover {
+            text-decoration: underline;
+        }
+
+    /* escape Razor on media */
+    @@media (min-width: 1400px) {
+        .login-wrap
+
+    {
+        max-width: 960px;
+    }
+
+    }
+</style>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+<div class="login-wrap">
+    <h1 class="page-title mb-1">Account Logon</h1>
+    <div class="lead-muted mb-4">Returning Customer</div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success">@TempData["Message"]</div>
+    }
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <!-- LOGIN CARD -->
+    <div class="card card-glass p-4 mb-4">
+        <p class="lead-muted mb-3">
+            If you previously created an account, please log on below using your registered email address.
+        </p>
+
+        <form asp-action="Login" method="post" id="loginForm">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control input-lg" placeholder="Email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PasswordHash" class="form-label">Password</label>
+                <input asp-for="PasswordHash" class="form-control input-lg" type="password" placeholder="Password" />
+                <span asp-validation-for="PasswordHash" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-green w-100 py-2">Logon</button>
+        </form>
+
+        <div class="d-flex align-items-center gap-2 mt-3">
+            <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#resetModal">
+                Forgot Password
+            </a>
+            <span class="text-muted">or</span>
+            <!-- This toggles the create form below -->
+            <a class="help-link" data-bs-toggle="collapse" href="#createCollapse" role="button"
+               aria-expanded="false" aria-controls="createCollapse">Create an Account</a>
+        </div>
+    </div>
+
+    <!-- CREATE ACCOUNT (same page, collapsible) -->
+    <div class="collapse" id="createCollapse">
+        <div class="card card-glass p-4">
+            <h3 class="section-title mb-3">Create an Account</h3>
+
+            <form asp-controller="Users" asp-action="Create" method="post" id="createForm" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">First name</label>
+                        <input type="text" class="form-control input-lg" id="firstName" placeholder="First name" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Middle name (optional)</label>
+                        <input type="text" class="form-control input-lg" id="middleName" placeholder="Middle name" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Last name</label>
+                        <input type="text" class="form-control input-lg" id="lastName" placeholder="Last name" />
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-md-4">
+                        <label class="form-label">Street No.</label>
+                        <input type="text" class="form-control input-lg" id="streetNo" placeholder="e.g. 123" />
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Best contact phone</label>
+                        <input type="tel" class="form-control input-lg" id="phone" placeholder="e.g. 0400 123 456" />
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control input-lg" placeholder="Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-1">
+                    <label asp-for="PasswordHash" class="form-label">Password</label>
+                    <input asp-for="PasswordHash" type="password" class="form-control input-lg" placeholder="Password" />
+                    <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                </div>
+
+                <!-- Hidden bound field we’ll populate from first/middle/last -->
+                <input type="hidden" asp-for="FullName" id="fullNameBound" />
+
+                <div id="fnError" class="text-danger d-none">Please enter at least a first or last name.</div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-green">Create Account</button>
+                </div>
+
+                <div class="small text-muted mt-3">
+                    Note: First/Middle/Last, Street No. and Phone are collected for a smoother setup.
+                    With the current data model only <strong>Full Name, Email and Password</strong> are stored.
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Password Modal (unchanged) -->
+<div class="modal fade" id="resetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reset your password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Users" asp-action="Reset" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input name="Email" type="email" class="form-control" placeholder="Please enter your email" required />
+                    </div>
+                    <div class="small text-muted">
+                        We’ll email a link that lets you set a new password. The link expires in 1 hour.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-green">Send Reset Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Build FullName from first/middle/last and keep the hidden field in sync
+    function buildFullName() {
+      const first  = (document.getElementById('firstName').value  || '').trim();
+      const middle = (document.getElementById('middleName').value || '').trim();
+      const last   = (document.getElementById('lastName').value   || '').trim();
+      const full   = [first, middle, last].filter(Boolean).join(' ');
+      document.getElementById('fullNameBound').value = full;
+      return full;
+    }
+    ['firstName','middleName','lastName'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', buildFullName);
+    });
+
+    // Ensure FullName exists before submitting Create (so ModelState.IsValid passes)
+    document.getElementById('createForm').addEventListener('submit', function (e) {
+      const full = buildFullName();
+      const msg  = document.getElementById('fnError');
+      if (!full) {
+        e.preventDefault();
+        msg.classList.remove('d-none');
+        document.getElementById('firstName').focus();
+      } else {
+        msg.classList.add('d-none');
+      }
+    });
+</script>

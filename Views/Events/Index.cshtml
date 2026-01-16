@@ -1,0 +1,197 @@
+﻿@model Zoolirante_Open_Minded.ViewModels.HomeIndexViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Events";
+
+    var q = Context.Request.Query["q"].ToString();
+    var sort = Context.Request.Query["sort"].ToString();
+
+    var selected = string.IsNullOrEmpty(sort) ? "soonest" : sort;
+    var items = new List<SelectListItem> {
+        new("Soonest", "soonest"),
+        new("Latest",  "latest")
+    };
+    var http = HttpContextAccessor.HttpContext!;
+    bool isManager = http.User?.IsInRole("Manager") == true || http.User?.IsInRole("Admin") == true;
+
+    var sessionRole = http.Session.GetString("Role") ?? http.Session.GetString("UserRole");
+    if (!isManager && !string.IsNullOrEmpty(sessionRole))
+    {
+        isManager =
+            sessionRole.Equals("Manager", StringComparison.OrdinalIgnoreCase) ||
+            sessionRole.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+    }
+    var userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+}
+
+
+<style>
+  .zoo-hero {
+    background: linear-gradient(140deg,#f3eac3 0%, #f7f1d8 60%, #fff 100%);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+  .zoo-title { color:#5a8f2b; font-weight:900; letter-spacing:.5px; }
+  .filter-chip { border-radius:999px; background:#fff; border:1px solid #e6e6e6; padding:.45rem .9rem; }
+  .zoo-card { border-radius:18px; overflow:hidden; box-shadow:0 10px 28px rgba(0,0,0,.10); }
+  .zoo-img-wrap { position:relative; }
+  .zoo-img { width:100%; height:360px; object-fit:cover; display:block; }
+  .img-gradient { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.55) 100%); }
+  .img-badge {
+    position:absolute; top:12px; left:14px; background:rgba(0,0,0,.55); color:#fff;
+    border-radius:999px; padding:3px 10px; font-size:.9rem;
+  }
+  .zoo-body { background:#fff; padding:18px 18px 20px; }
+  .zoo-meta { font-size:.95rem; color:#3a3a3a; margin-bottom:4px; }
+  .zoo-desc { color:#555; margin-top:6px; }
+  .btn-zoo { background:#5a8f2b; color:#fff; border:0; border-radius:12px; padding:.5rem .95rem; font-weight:600; }
+  .btn-zoo:hover { filter:brightness(.95); }
+</style>
+
+<section class="zoo-hero py-4">
+    <div class="container">
+        <div class="d-lg-flex align-items-end justify-content-between">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="zoo-title mb-1">Explore Zoo Events</h1>
+                <p class="text-muted mb-0">Parades, keeper talks, animal encounters & more.</p>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center">
+                <form method="get" class="d-flex gap-2">
+                    <input class="form-control filter-chip" type="text" name="q" value="@q" placeholder="Search title, location…" />
+                    @Html.DropDownList("sort", new SelectList(items, "Value", "Text", selected),
+                    new { @class = "form-select filter-chip" })
+                    <button class="btn btn-zoo">Apply</button>
+                </form>
+
+                @if (isManager)
+                {
+                    <a asp-controller="Events" asp-action="Create" class="btn btn-success">Add New Event</a>
+                }
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div class="py-4">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- TODAY -->
+      <div class="col-12 col-lg-6">
+        <h2 class="zoo-title text-center mb-3">Today's Events</h2>
+        @if (Model.EventsToday?.Any() == true) {
+          var cid = "todayCarousel";
+          <div id="@cid" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              @for (int i = 0; i < Model.EventsToday.Count; i++) {
+                var ev = Model.EventsToday[i];
+                <div class="carousel-item @(i==0?"active":"")">
+                  <div class="zoo-card">
+                    <div class="zoo-img-wrap">
+                        <img class="zoo-img"
+                            src="@(string.IsNullOrWhiteSpace(ev.ImageUrl) ? "/images/placeholder-event.jpg" : ev.ImageUrl)"
+                            alt="@ev.Title" />
+
+                      <div class="img-gradient"></div>
+                      <span class="img-badge">@(@i+1) / @Model.EventsToday.Count</span>
+                    </div>
+                    <div class="zoo-body">
+                      <h4 class="fw-bold mb-2">@ev.Title</h4>
+                      <div class="zoo-meta"><strong>Time:</strong> @ev.StartTime.ToString("g") – @ev.EndTime.ToString("g")</div>
+                      <div class="zoo-meta"><strong>Location:</strong> @ev.Location</div>
+                      @if (!string.IsNullOrWhiteSpace(ev.Description)) {
+                        <div class="zoo-desc">@ev.Description</div>
+                      }
+                      <div class="mt-3 d-flex gap-2">
+                        <a asp-action="Details" asp-route-id="@ev.EventId" class="normal-button">View details</a>
+                        <a asp-action="Ics" asp-route-id="@ev.EventId" class="normal-button" style="border-radius:12px;">Add to calendar</a>
+                       </div>
+                       @if (role == "Admin")
+                       {
+                           <div>
+                            <a asp-controller="Events" asp-action="Edit" asp-route-id="@ev.EventId" class="edit-button">Edit</a>
+                            <a asp-controller="Events" asp-action="Delete" asp-route-id="@ev.EventId" class="delete-button">Delete</a>
+                          </div>
+                       }                       
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if (Model.EventsToday.Count > 1) {
+              <button class="carousel-control-prev" type="button" data-bs-target="#@cid" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#@cid" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span>
+              </button>
+            }
+          </div>
+        } else {
+          <div class="alert alert-secondary">No events today.</div>
+        }
+      </div>
+
+      <!-- UPCOMING -->
+      <div class="col-12 col-lg-6">
+        <h2 class="zoo-title text-center mb-3">Upcoming Events Of The Week</h2>
+        @if (Model.EventsUpcoming?.Any() == true) {
+          var cid = "upcomingCarousel";
+          <div id="@cid" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              @for (int i = 0; i < Model.EventsUpcoming.Count; i++) {
+                var ev = Model.EventsUpcoming[i];
+                <div class="carousel-item @(i==0?"active":"")">
+                  <div class="zoo-card">
+                    <div class="zoo-img-wrap">
+                      <img class="zoo-img" src="@(string.IsNullOrWhiteSpace(ev.ImageUrl)?"/images/placeholder-event.jpg":ev.ImageUrl)" alt="@ev.Title" />
+                      <div class="img-gradient"></div>
+                      <span class="img-badge">@(@i+1) / @Model.EventsUpcoming.Count</span>
+                    </div>
+                    <div class="zoo-body">
+                      <h4 class="fw-bold mb-2">@ev.Title</h4>
+                      <div class="zoo-meta"><strong>Time:</strong> @ev.StartTime.ToString("g") – @ev.EndTime.ToString("g")</div>
+                      <div class="zoo-meta"><strong>Location:</strong> @ev.Location</div>
+                      @if (!string.IsNullOrWhiteSpace(ev.Description)) {
+                        <div class="zoo-desc">@ev.Description</div>
+                      }
+                      <div class="mt-3 d-flex gap-2">
+                        <a asp-action="Details" asp-route-id="@ev.EventId" class="normal-button">View details</a>
+                        <a asp-action="Ics" asp-route-id="@ev.EventId" class="normal-button" style="border-radius:12px;">Add to calendar</a>
+                      </div>
+                      @if (role == "Admin")
+                      {
+                          <div>
+                            <a asp-controller="Events" asp-action="Edit" asp-route-id="@ev.EventId" class="edit-button">Edit</a>
+                            <a asp-controller="Events" asp-action="Delete" asp-route-id="@ev.EventId" class="delete-button">Delete</a>
+                          </div>
+                      }
+                      
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if (Model.EventsUpcoming.Count > 1) {
+              <button class="carousel-control-prev" type="button" data-bs-target="#@cid" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#@cid" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span>
+              </button>
+            }
+          </div>
+        } else {
+          <div class="alert alert-secondary">No upcoming events in the next 7 days.</div>
+        }
+      </div>
+
+    </div>
+  </div>
+</div>

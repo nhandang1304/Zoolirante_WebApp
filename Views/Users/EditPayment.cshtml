@@ -1,0 +1,27 @@
+﻿@model Zoolirante_Open_Minded.Models.User
+@{
+    ViewData["Title"] = "Edit Payment Method";
+}
+<h2>Edit Payment Method</h2>
+
+<form asp-action="EditPayment" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Payment Method</label>
+        <select name="paymentMethod" class="form-control">
+            @foreach (var opt in (List<string>)ViewBag.PaymentOptions)
+            {
+                <option value="@opt">@opt</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</form>
+
+@if (TempData["Message"] != null)
+{
+    <p class="text-success mt-2">@TempData["Message"]</p>
+}

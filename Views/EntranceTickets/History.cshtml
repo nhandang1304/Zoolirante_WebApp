@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Zoolirante_Open_Minded.Models.EntranceTicket>
+@{
+    ViewData["Title"] = "My Visit History";
+}
+
+<h2 class="custom-large-title">My Visit History</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">You have no visit history yet.</div>
+}
+else
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Visit Date</th>
+                <th>Type</th>
+                <th>Price</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var v in Model)
+            {
+                <tr>
+                    <td>@(v.VisitDate.ToString("yyyy-MM-dd"))</td>
+                    <td>@v.Type</td>
+                    <td>@v.Price.ToString("C")</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(v.Details) && v.Details.Contains("discount"))
+                        {
+                            <span class="text-success">@v.Details</span>
+                        }
+                        else
+                        {
+                            @v.Details
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

@@ -1,0 +1,66 @@
+﻿@model Zoolirante_Open_Minded.Models.ResetPasswordViewModel
+@{
+    ViewData["Title"] = "Set a new password";
+}
+
+<style>
+    .confirm-wrap {
+        max-width: 720px;
+        margin: 24px auto 64px;
+    }
+
+    .card-glass {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,.06);
+        box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+</style>
+
+<div class="confirm-wrap">
+    <h2 class="mb-3">Set a new password</h2>
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="card card-glass p-4">
+        <form asp-action="ConfirmReset" method="post" id="confirmForm">
+            @Html.AntiForgeryToken()
+
+            <!-- These are provided by the link in the email -->
+            <input type="hidden" asp-for="Email" />
+            <input type="hidden" asp-for="Token" />
+
+            <div class="mb-3">
+                <label asp-for="NewPassword" class="form-label">New password</label>
+                <input asp-for="NewPassword" type="password" class="form-control" id="newPassword" placeholder="Enter a strong password" />
+                <span asp-validation-for="NewPassword" class="text-danger"></span>
+            </div>
+
+            <!-- Client-side confirm field (not bound to model) -->
+            <div class="mb-3">
+                <label class="form-label">Confirm password</label>
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter the password" />
+                <div class="text-danger d-none" id="mismatchMsg">Passwords do not match.</div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Save new password</button>
+            <a asp-action="Login" class="btn btn-link">Back to Login</a>
+        </form>
+    </div>
+</div>
+
+<script>
+    // simple client-side match check; no controller changes
+    document.getElementById('confirmForm').addEventListener('submit', function (e) {
+      const a = document.getElementById('newPassword').value;
+      const b = document.getElementById('confirmPassword').value;
+      const msg = document.getElementById('mismatchMsg');
+      if (a !== b) {
+        e.preventDefault();
+        msg.classList.remove('d-none');
+        document.getElementById('confirmPassword').focus();
+      } else {
+        msg.classList.add('d-none');
+      }
+    });
+</script>

@@ -1,0 +1,36 @@
+﻿@model Zoolirante_Open_Minded.Models.User
+@{
+    ViewData["Title"] = "Reset Password";
+}
+
+<style>
+    .reset-wrap {
+        max-width: 720px;
+        margin: 24px auto 64px;
+    }
+
+    .card-glass {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,.06);
+        box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+</style>
+
+<div class="reset-wrap">
+    <h2 class="mb-3">Reset Password</h2>
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="card card-glass p-4">
+        <form asp-action="Reset" method="post">
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="Please enter your email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Reset Link</button>
+            <a asp-action="Login" class="btn btn-link">Back to Login</a>
+        </form>
+    </div>
+</div>

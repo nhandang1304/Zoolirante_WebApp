@@ -1,0 +1,442 @@
+﻿@model Zoolirante_Open_Minded.ViewModels.HomeIndexViewModel
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Home Page";
+    var userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+}
+
+<style>
+    .bottom-no-radius {
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+
+    .card-title {
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-weight: bold;
+        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    * {
+        box-sizing: border-box
+    }
+
+    .mySlides1, .mySlides2 {
+        display: none
+    }
+
+    img {
+        vertical-align: middle;
+        border-radius: 10px;
+    }
+
+    /* Slideshow container */
+    .slideshow-container {
+        max-width: 1000px;
+        position: relative;
+        margin: auto;
+    }
+
+    /* Next & previous buttons */
+    .prev, .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: auto;
+        padding: 16px;
+        margin-top: -22px;
+        color: #f1f1f1;
+        font-weight: bolder;
+        font-size: 50px;
+        transition: 0.6s ease;
+        border-radius: 0 3px 3px 0;
+        user-select: none;
+        z-index: 10;
+    }
+
+    /* Position the "next button" to the right */
+    .next {
+        right: 0;
+        border-radius: 3px 0 0 3px;
+    }
+
+    /* On hover, add a grey background color */
+    .prev:hover, .next:hover {
+        background-color: #f1f1f1;
+        color: black;
+    }
+
+    /* Number text (1/3 etc) */
+    .numbertext {
+        color: #f2f2f2;
+        font-size: 30px;
+        padding: 8px 12px;
+        position: absolute;
+        top: 0;
+    }
+
+    /* Fading animation */
+    .fade {
+        animation-name: fade;
+        animation-duration: 1.5s;
+    }
+
+    @@keyframes fade {
+        from{opacity: .4}
+        to {opacity: 1}
+    }
+</style>
+
+<br />
+
+<div class="row justify-content-center g-4 mb-5">
+    <div class="col-5 me-5">
+        <h2 class="text-center custom-large-title">Today's Events</h2>
+        <br />
+
+        @if (Model.EventsToday.Any())
+        {
+            <div class="slideshow-container">
+
+                @for (int i = 0; i < Model.EventsToday.Count; i++)
+                {
+                    var e = Model.EventsToday[i];
+                    <div class="mySlides1 card border-0" style="width:100%">
+                        <div class="numbertext">@(i + 1) / @Model.EventsToday.Count</div>
+                        <img src="@e.ImageUrl" class="card-img-top" style="width:100%; height:450px;" />
+                        <h2 class="custom-title" style="position:absolute; bottom:20px; left:20px; color:white; background:rgba(0,0,0,0.4); padding:5px 10px; border-radius:10px">
+                            @e.Title
+                        </h2>
+                        <a class="stretched-link" asp-controller="Events" asp-action="Details" asp-route-id="@e.EventId"></a>
+                    </div>
+                }
+
+                <!-- Next and previous buttons -->
+                <a class="prev" onclick="plusSlides(-1, 0)">&#10094;</a>
+                <a class="next" onclick="plusSlides(1, 0)">&#10095;</a>
+            </div>
+        }
+        else
+        {
+            <p>No events today.</p>
+        }
+    </div>
+        
+    <div class="col-5 ms-5">
+        <h2 class="text-center custom-large-title">Upcoming Events</h2>
+        <br />
+
+        @if (Model.EventsUpcoming.Any())
+        {
+            <div class="slideshow-container">
+
+                @for (int i = 0; i < Model.EventsUpcoming.Count; i++)
+                {
+                    var e = Model.EventsUpcoming[i];
+                    <div class="mySlides2 card border-0" style="width:100%">
+                        <div class="numbertext">@(i + 1) / @Model.EventsToday.Count</div>
+                        <img src="@e.ImageUrl" class="card-img-top" style="width:100%; height:450px;" />
+                        <h2 class="custom-title" style="position:absolute; bottom:20px; left:20px; color:white; background:rgba(0,0,0,0.4); padding:5px 10px; border-radius:10px">
+                            @e.Title
+                        </h2>
+                        <a class="stretched-link" asp-controller="Events" asp-action="Details" asp-route-id="@e.EventId"></a>
+                    </div>
+                }
+
+                <!-- Next and previous buttons -->
+                <a class="prev" onclick="plusSlides(-1, 1)">&#10094;</a>
+                <a class="next" onclick="plusSlides(1, 1)">&#10095;</a>
+            </div>
+        }
+        else
+        {
+            <p>No events today.</p>
+        }
+    </div>
+</div>
+
+<script>
+    let slideIndex = [1,1];
+    let slideId = ["mySlides1", "mySlides2"]
+    showSlides(1, 0);
+    showSlides(1, 1);
+
+    function plusSlides(n, no) {
+        showSlides(slideIndex[no] += n, no);
+    }
+
+    function showSlides(n, no) {
+        let i;
+        let x = document.getElementsByClassName(slideId[no]);
+        if (x.length === 0) return;
+
+        if (n > x.length) {slideIndex[no] = 1}
+        if (n < 1) {slideIndex[no] = x.length}
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        x[slideIndex[no]-1].style.display = "block";
+    }
+
+    setInterval(() => {plusSlides(1, 0)}, 3000);
+    setInterval(() => {plusSlides(1, 1)}, 4000);
+</script>
+
+
+<hr />
+
+
+
+<div style="display:flex; justify-content:end; width:100%;">
+    <div class="card mt-5 mb-5" style="width:80%; position: relative; border:none">
+        <img src="images/monkey.jpeg" style="width:100%; height:100%; border-radius:13px;" />
+        <div style="position: absolute; top: 30px; left: -100px;">
+            <a class="fancy" asp-controller="Animals" asp-action="Index">
+                <span class="top-key"></span>
+                <span class="text">Explore</span>
+                <span class="bottom-key-1"></span>
+                <span class="bottom-key-2"></span>
+            </a>
+        </div>
+        <div style="position: absolute; bottom: 50px; left: 30px;">
+            <h2 class="custom-large-title" style="color:white; font-size:6vw">Explore</h2>
+            <h2 class="custom-large-title" style="color:white; font-size:6vw">Our Animals</h2>
+        </div>
+    </div>
+</div>
+
+
+<hr />
+
+<
+<div style="display:flex; justify-content:start; width:100%;">
+    <div class="card mt-5 mb-5" style="width:80%; position: relative; border:none">
+        <img src="images/tiger.png" style="width:100%; height:100%; border-radius:13px;" />
+
+        @if(userId == null)
+        {
+            <div style="position: absolute; top: 30px; right: -100px;">
+                <a class="fancy" asp-controller="Users" asp-action="Login">
+                    <span class="top-key"></span>
+                    <span class="text">Buy Tickets</span>
+                    <span class="bottom-key-1"></span>
+                    <span class="bottom-key-2"></span>
+                </a>
+            </div>
+
+        }
+        else if(userId != null && role != "Admin")
+        {
+            <div style="position: absolute; top: 30px; right: -100px;">
+                <a class="fancy" asp-controller="EntranceTickets" asp-action="Buy">
+                    <span class="top-key"></span>
+                    <span class="text">Buy Tickets</span>
+                    <span class="bottom-key-1"></span>
+                    <span class="bottom-key-2"></span>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div style="position: absolute; top: 30px; right: -100px;">
+                <a class="fancy" href="#">
+                    <span class="top-key"></span>
+                    <span class="text">Buy Tickets</span>
+                    <span class="bottom-key-1"></span>
+                    <span class="bottom-key-2"></span>
+                </a>
+            </div>
+        
+        }
+
+        <div style="position: absolute; bottom: 90px; right: 30px;">
+            <h2 class="custom-large-title" style="color:white; font-size:6vw">Buy</h2>
+            <h2 class="custom-large-title" style="color:white; font-size:6vw">Tickets</h2>
+        </div>
+    </div>
+</div>
+
+
+<br />
+
+
+<div style="display:flex; justify-content:center; width:100%; margin-bottom:20px;">
+    <!-- Membership Col -->
+    <!-- From Uiverse.io by Yaya12085 -->
+    <div class="plan">
+        <div class="inner">
+            <span class="pricing">
+                <span>
+                    $49 <small>/ m</small>
+                </span>
+            </span>
+            <p class="title">Monthly Membership</p>
+            <p class="info">Unlock one month of wildlife and adventure at Zoolirante. Every membership helps save species from extinction and protect wild habitats.</p>
+            <ul class="features">
+                <li>
+                    <span class="icon">
+                        <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 0h24v24H0z" fill="none"></path>
+                            <path fill="currentColor" d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                        </svg>
+                    </span>
+                    <span><strong>Unlimited</strong> visits to Zoolirante</span>
+                </li>
+                <li>
+                    <span class="icon">
+                        <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 0h24v24H0z" fill="none"></path>
+                            <path fill="currentColor" d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                        </svg>
+                    </span>
+                    <span><strong>Discounts</strong> on cafes and gift shops</span>
+                </li>
+                <li>
+                    <span class="icon">
+                        <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 0h24v24H0z" fill="none"></path>
+                            <path fill="currentColor" d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                        </svg>
+                    </span>
+                    <span>Contribute to our <strong>conservation</strong> work</span>
+                </li>
+            </ul>
+            <div class="action">
+                @if (userId == null)
+                {
+                    <a asp-controller="Users" asp-action="login" class="button">
+                        Become a member
+                    </a>
+                }
+                else if (role != "Admin")
+                {
+                    <a asp-controller="Memberships" asp-action="Join" class="button">
+                        Become a member
+                    </a>
+                }
+                else
+                {
+                    <a class="button" href="#">
+                        Become a member
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+<br />
+
+
+<!-- Interactive Map using Leaflet.js -->
+<div class="text-center mt-5 mb-5">
+    <div class="d-flex justify-content-center align-items-center mb-1 gap-5">
+        <h2 class="custom-large-title">Map Of The Zoo</h2>
+        <a href="images/sample_map.pdf" class="text-decoration-none d-flex align-items-center" download>
+            <i class="fa-solid fa-download fa-2x" style="color: #659707"></i>
+            <span class="custom-subtitle ms-2">Download PDF here</span>
+        </a>
+    </div>
+    
+    <div class="card" style="border:none">
+        <div class="row">
+            <div class="col-8">
+                <div id="map" class="map" style="width: 100%"></div>
+            </div>
+            <div class="col-auto text-start my-2">
+                <div class="my-3">
+                    <i class="fa-solid fa-location-dot" style="color: orange"></i>
+                    <span class="custom-subtitle">Animal Sections</span>
+                    <p>African Savannah - lions, giraffes, zebras, elephants</p>
+                    <p>Australian Rainforest - tigers, orangutans, gibbons</p>
+                    <p>South American Jungle - jaguars, macaws, sloths</p>
+                    <p>North American Plains - bison, wolves, bears</p>
+                    <p>Arctic Zone - polar bear, seals, penguins</p>
+                </div>
+                <div class="my-3">
+                    <i class="fa-solid fa-location-dot" style="color: green"></i>
+                    <span class="custom-subtitle">Restaurants</span>
+                    <p>Savanna Cafe (10:00 - 15:00)</p>
+                    <p>Rainforest Grill (11:00 - 14:00, 17:00 - 20:00)</p>
+                    <p>Jungle Feast (11:00 - 14:00, 16:00 - 20:00)</p>
+                    <p>The Oasis Deli (11:00 - 20:00)</p>
+                    <p>The Watering Hole (10:00 - 14:00, 17:00 - 20:00)</p>
+                </div>
+                <div class="my-3">
+                    <i class="fa-solid fa-location-dot" style="color: cornflowerblue"></i>
+                    <span class="custom-subtitle">Gift Shops</span>
+                    <p>Safari Souvenirs, Jungle Treasures, Nature's Nook</p>
+                    <p>Wild Wonders Gift Shop, Riverbank Gifts</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const map = L.map('map', {crs: L.CRS.Simple, zoomSnap: 0.2, zoomDelta: 0.5, minZoom: -1, maxZoom: 1});
+    const bounds = [[0, 0], [800, 1500]];
+    const image = L.imageOverlay('/images/sample_map.png', bounds).addTo(map);
+    map.fitBounds(bounds);
+
+    // Icon class for Pin
+       var orangePin = L.icon({
+        iconUrl: 'images/orange_pin.png',
+        iconSize: [40, 40],
+        iconAnchor: [0, 0],
+        popupAnchor: [25, -2]
+    });
+
+    var bluePin = L.icon({
+        iconUrl: 'images/blue_pin.png',
+        iconSize: [35, 40],
+        iconAnchor: [0, 0],
+        popupAnchor: [25, -2]
+    });
+
+    var greenPin = L.icon({
+        iconUrl: 'images/green_pin.png',
+        iconSize: [30, 40],
+        iconAnchor: [0, 0],
+        popupAnchor: [25, -2]
+    });
+
+    // display orange pins
+    L.marker([600, 300], {icon: orangePin}).addTo(map).bindPopup("Bear exhibit");
+    L.marker([570, 850], {icon: orangePin}).addTo(map).bindPopup("Savanna exhibit");
+    L.marker([250, 150], {icon: orangePin}).addTo(map).bindPopup("Primate exhibit");
+    L.marker([200, 850], {icon: orangePin}).addTo(map).bindPopup("Bird exhibit");
+
+    // display green pins
+    L.marker([550, 450], {icon: greenPin}).addTo(map).bindPopup("Jungle Feast");
+    L.marker([500, 1100], {icon: greenPin}).addTo(map).bindPopup("The Watering Hole");
+
+    // dispaly blue pins
+    L.marker([200, 1200], {icon: bluePin}).addTo(map).bindPopup("Gift Shops");
+
+</script>
+
+<br />
+
+<div style="background-color:#659707; width:100vw; margin-left:calc(-50vw + 50%); padding:60px 0;">
+    <div class="container text-light">
+        <h2 class="custom-large-title" style="color:#f0f0f0; text-align:center;">About Zoolirante</h2>
+        <br />
+        <div style="font-family:Century; font-size:25px; color:#e3ddda; ">
+            <p>Nestled in the heart of Italy, Zoolirante is more than just a zoo — it’s a living celebration of nature, curiosity, and connection. Founded with a passion for wildlife and a vision for a sustainable future, Zoolirante brings together animals, people, and the environment in a space designed to inspire wonder and respect for the natural world.</p>
+
+            <p>Our mission is to foster a deep appreciation for biodiversity through immersive experiences, innovative habitats, and educational programs that engage visitors of all ages. Every exhibit at Zoolirante is thoughtfully crafted to reflect the animals’ natural environments, ensuring their comfort, health, and happiness while allowing guests to observe the beauty of wildlife up close.</p>
+
+            <p>Beyond conservation, Zoolirante is a place of joy and discovery — a destination where families laugh together, students learn through adventure, and every visitor leaves with a renewed sense of connection to the planet we share. From our lush botanical paths to our commitment to research and rescue efforts, Zoolirante represents Italy’s spirit of care, creativity, and community.</p>
+
+            <p>At Zoolirante, every visit is not just a day at the zoo — it’s a journey into the wild heart of life itself.</p>
+        </div>
+    </div>
+</div>
+

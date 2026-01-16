@@ -1,0 +1,291 @@
+﻿@model IEnumerable<Zoolirante_Open_Minded.Models.Merchandise>
+@{
+    ViewData["Title"] = "Index";
+}
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+
+@{
+    var userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role") ?? "Customer";
+    var isManager = string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(role, "Manager", StringComparison.OrdinalIgnoreCase);
+}
+
+<h1 class="custom-large-title">Merchandise</h1>
+
+<div class="action-bar rounded-3 p-3 mb-3 shadow-sm">
+    <div class="d-flex align-items-center flex-wrap gap-2">
+        <form method="get" class="flex-grow-1">
+            <div class="input-group input-group-lg">
+                <input name="searchText"
+                       value="@ViewBag.SearchText"
+                       class="form-control search-control"
+                       placeholder="Search merchandise…" />
+                <button class="btn btn-amber-lg" type="submit">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i> Search
+                </button>
+            </div>
+        </form>
+
+        <div class="d-flex align-items-center gap-2 ms-auto">
+            @if (userId != null)
+            {
+                <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-amber-lg">
+                    <i class="fa-solid fa-cart-shopping me-1"></i>
+                    <span class="d-none d-sm-inline">View Cart</span>
+                </a>
+            }
+
+            @if (userId != null && isManager)
+            {
+                <a asp-controller="Lto" asp-action="Index" class="btn btn-amber-lg">
+                    <i class="fa-solid fa-boxes-packing me-1"></i>
+                    <span class="d-none d-sm-inline">LTO Action</span>
+                </a>
+
+                <a asp-action="Create" class="btn btn-outline-amber-lg">
+                    <i class="fa-solid fa-plus me-1"></i>
+                    <span class="d-none d-sm-inline">Create New</span>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .action-bar {
+        background: #fff7e7; /* soft amber background */
+        border: 2px solid #f6c26b; /* amber border */
+    }
+
+    .btn-amber-lg {
+        background: #f0ad4e;
+        border-color: #f0ad4e;
+        color: #000;
+        font-weight: 700;
+        border-radius: 14px;
+        padding: .65rem 1.1rem;
+    }
+
+        .btn-amber-lg:hover {
+            background: #f6c26b;
+            border-color: #f6c26b;
+            color: #000;
+        }
+
+    .btn-outline-amber-lg {
+        background: #fff;
+        border: 2px solid #f0ad4e;
+        color: #c06b00;
+        font-weight: 700;
+        border-radius: 14px;
+        padding: .65rem 1.1rem;
+    }
+
+        .btn-outline-amber-lg:hover {
+            background: #fff3cd;
+            color: #995200;
+        }
+
+    .search-control {
+        border-radius: 12px 0 0 12px;
+    }
+</style>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">No merchandise found.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top" src="@item.ImageUrl" alt="@item.Name" />
+
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                            <h6 class="card-title mb-0 text-truncate">@item.Name</h6>
+                            @if (!string.IsNullOrEmpty(item.Category))
+                            {
+                                <span class="badge text-bg-light border">@item.Category</span>
+                            }
+                        </div>
+
+                        <p class="card-text small text-muted text-truncate-2 flex-grow-1">
+                            @item.Description
+                        </p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="fw-bold">@item.Price.ToString("C")</span>
+                            <span class="badge text-bg-secondary">Stock: @item.Stock</span>
+                        </div>
+
+                        @if (item.SpecialPrice.HasValue && item.SpecialQty > 0)
+                        {
+                            <div class="mt-1 d-flex align-items-center gap-2">
+                                <span class="badge bg-danger">
+                                    Special @item.SpecialQty at @item.SpecialPrice.Value.ToString("C")
+                                </span>
+                                @if (!string.IsNullOrWhiteSpace(item.SpecialReason))
+                                {
+                                    <span class="badge bg-light text-dark"
+                                          data-bs-toggle="tooltip"
+                                          title="@item.SpecialReason">
+                                        Reason
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.ProductId">Details</a>
+
+                            @if (userId != null && isManager)
+                            {
+                                <!-- Stacked buttons match your card layout (.d-grid gap-2 above) -->
+                                <a class="btn btn-warning btn-sm"
+                                   asp-action="Edit"
+                                   asp-route-id="@item.ProductId"
+                                   asp-route-focus="stock">
+                                    <i class="fa-solid fa-screwdriver-wrench me-1"></i> Stock Adjustment
+                                </a>
+
+                                <a class="btn btn-sm btn-warning" asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+
+                                <div class="btn-group">
+                                    <button type="button"
+                                            class="btn btn-sm btn-warning"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#sp-@item.ProductId">
+                                        Set price
+                                    </button>
+                                </div>
+
+                            }
+
+                            @if (item.Stock <= 0)
+                            {
+                                <div class="text-danger small mt-2">Out of stock</div>
+                            }
+                            else
+                            {
+                                @if (userId != null)
+                                {
+                                <form asp-controller="Merchandises" asp-action="AddToCart" method="post" class="d-flex align-items-center gap-2 mt-2">
+                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                    <input type="number" name="qty" value="1" min="1" max="@item.Stock"
+                                           class="form-control form-control-sm w-auto" />
+                                    <button type="submit" class="btn btn-sm btn-primary">Add to cart</button>
+
+                                    @Html.AntiForgeryToken()
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-warning" asp-controller="Users" asp-action="Login">Please login to buy item</a>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+@if (userId != null && isManager)
+{
+    @* Render all modals outside the cards to avoid layout/flicker issues *@
+    @foreach (var item in Model)
+    {
+        <div class="modal fade"
+             id="sp-@item.ProductId"
+             tabindex="-1"
+             aria-hidden="true"
+             data-bs-backdrop="static"
+             data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <!-- Use a normal hyphen to avoid encoding “��” -->
+                        <h5 class="modal-title">Set special price - @item.Name</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form asp-controller="Merchandises" asp-action="UpdateSpecial" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.ProductId" />
+
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Discount (%)</label>
+                                <input type="number"
+                                       step="0.1" min="0" max="100"
+                                       class="form-control"
+                                       name="percent"
+                                       id="pct-@item.ProductId"
+                                       oninput="
+                                                 const base=@(item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                                                 const p=parseFloat(this.value||'0');
+                                                 if(!isNaN(p)){
+                                                   const out=document.getElementById('np-@item.ProductId');
+                                                   if(out){ out.value=(base*(1-p/100)).toFixed(2); }
+                                                 }">
+                                <div class="form-text">Leave blank if setting price manually.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">New price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" min="0"
+                                           class="form-control"
+                                           name="specialPrice"
+                                           id="np-@item.ProductId"
+                                           value="@(item.SpecialPrice?.ToString("0.00") ?? "")" />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Qty at special price</label>
+                                <input type="number" min="0" max="@item.Stock"
+                                       class="form-control"
+                                       name="specialQty"
+                                       value="@item.SpecialQty" />
+                                <div class="form-text">Total stock: @item.Stock</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Reason (visible to customers)</label>
+                                <textarea class="form-control" rows="2" name="specialReason">@item.SpecialReason</textarea>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            .forEach(el => new bootstrap.Tooltip(el));
+    </script>
+}
+
+

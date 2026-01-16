@@ -1,0 +1,219 @@
+@model Zoolirante_Open_Minded.Models.EntranceTicket
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userId = HttpContextAccessor.HttpContext?.Session.GetInt32("UserId");
+    var fullName = HttpContextAccessor.HttpContext?.Session.GetString("FullName") ?? "Guest";
+    ViewData["Title"] = "Buy Entrance Ticket";
+}
+
+<style>
+    .visit-panel {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 12px;
+    }
+
+        .visit-panel .card-header {
+            background: #ffe69c;
+            border-bottom: 1px solid #ffc107;
+            color: #111827;
+            font-weight: 700;
+        }
+
+        .visit-panel .card-body,
+        .visit-panel label,
+        .visit-panel .form-control,
+        .visit-panel .form-select {
+            color: #111827;
+        }
+</style>
+
+<h2 class="mb-3 custom-large-title">Buy Entrance Ticket</h2>
+<p class="mb-2">Logged in as: <strong>@fullName</strong></p>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-info">@TempData["Info"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<!-- Booking UI -->
+<div class="card visit-panel shadow-sm mb-4">
+    <div class="card-header">Choose your visit time</div>
+    <div class="card-body">
+        <form id="visitForm" class="row g-2 align-items-end">
+            @Html.AntiForgeryToken()
+
+            <div class="col-md-4">
+                <label class="form-label">Date</label>
+                <input type="date" name="VisitDate" class="form-control"
+                       value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label" hidden>Time range</label>
+                <select name="VisitRange" class="form-select" hidden>
+                    <option>09:00-11:00</option>
+                    <option>11:00-13:00</option>
+                    <option>13:00-15:00</option>
+                    <option>15:00-17:00</option>
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex gap-2">
+                <button type="button" id="bookVisitBtn" class="btn btn-success flex-fill">Book</button>
+                <button type="button" id="cancelVisitBtn" class="btn btn-outline-danger flex-fill">Cancel</button>
+            </div>
+        </form>
+
+        <div id="visitAlertArea" class="mt-2"></div>
+    </div>
+</div>
+
+
+<div class="mb-3">
+    <label class="form-label">Ticket Type</label><br />
+    <input type="radio" id="adult" name="ticketType" value="Adult" checked />
+    <label for="adult">Adult ($30)</label>&nbsp;&nbsp;
+    <input type="radio" id="child" name="ticketType" value="Child" />
+    <label for="child">Child ($20)</label>
+</div>
+
+
+<button disabled type="button" id="btnPayCard" class="normal-button">Pay with Card</button>
+
+
+<iframe name="bgSubmit" style="display:none;"></iframe>
+<form id="paypalForm" asp-controller="Payments" asp-action="PaypalDemo" method="post" target="bgSubmit" class="">
+    <input type="hidden" name="purpose" value="ticket" />
+    <input type="hidden" name="ticketType" id="ppTicketType" />
+    <input type="hidden" name="qty" value="1" />
+    <input type="hidden" name="visitDate" id="ppVisitDate" />
+    <input type="hidden" name="visitRange" id="ppVisitRange" />
+    @Html.AntiForgeryToken()
+    <button id="btnPayPal" disabled type="submit" class="normal-button"
+            onclick="window.open('https://www.sandbox.paypal.com/', '_blank')">
+        Pay with PayPal
+    </button>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const bookBtn = document.getElementById('bookVisitBtn');
+        const cancelBtn = document.getElementById('cancelVisitBtn');
+        const visitAlertArea = document.getElementById('visitAlertArea');
+        const visitForm = document.getElementById('visitForm');
+        const btnPayCard = document.getElementById('btnPayCard');
+        const btnPayPal = document.getElementById('btnPayPal');
+
+        const visitDateInput = visitForm.querySelector('input[name="VisitDate"]');
+
+        // Reset date if booked date is in the past
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (visitDateInput.value < todayStr) {
+            visitDateInput.value = todayStr;
+        }
+
+        // Disable payment buttons initially
+        if (btnPayCard) btnPayCard.disabled = true;
+        if (btnPayPal) btnPayPal.disabled = true;
+
+        // Booking button click
+        bookBtn.addEventListener('click', () => {
+            const date = visitDateInput.value;
+            const range = visitForm.querySelector('select[name="VisitRange"]').value;
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            if (date < todayStr) {
+                alert('Selected date is in the past. Please choose a valid visit date.');
+                visitDateInput.value = todayStr;
+                return;
+            }
+
+            // Disable book button
+            bookBtn.disabled = true;
+            bookBtn.textContent = 'Booked ✓';
+            bookBtn.classList.remove('btn-success');
+            bookBtn.classList.add('btn-secondary');
+
+            // Show booking alert
+            visitAlertArea.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Booked successfully for <strong>${date}</strong>.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+
+            // Enable payment buttons
+            if (btnPayCard) btnPayCard.disabled = false;
+            if (btnPayPal) btnPayPal.disabled = false;
+        });
+
+        // Cancel button click
+        cancelBtn.addEventListener('click', () => {
+            visitForm.reset();
+            visitDateInput.value = new Date().toISOString().split('T')[0]; // reset to today
+
+            bookBtn.disabled = false;
+            bookBtn.textContent = 'Book';
+            bookBtn.classList.remove('btn-secondary');
+            bookBtn.classList.add('btn-success');
+
+            visitAlertArea.innerHTML = '';
+            if (btnPayCard) btnPayCard.disabled = true;
+            if (btnPayPal) btnPayPal.disabled = true;
+        });
+
+        // Card payment
+        if (btnPayCard) {
+            btnPayCard.addEventListener('click', () => {
+                const ticketType = document.querySelector('input[name="ticketType"]:checked').value;
+                const visitDate = visitDateInput.value;
+                const visitRange = visitForm.querySelector('select[name="VisitRange"]').value;
+
+                if (!visitDate || visitDate < todayStr) {
+                    alert('Please book a valid visit date before paying.');
+                    visitDateInput.value = todayStr;
+                    return;
+                }
+
+                const url = '@Url.Action("Card", "Payments")'
+                            + '?purpose=ticket'
+                            + '&ticketType=' + encodeURIComponent(ticketType)
+                            + '&qty=1'
+                            + '&visitDate=' + encodeURIComponent(visitDate)
+                            + '&visitRange=' + encodeURIComponent(visitRange);
+
+                window.location.href = url;
+            });
+        }
+
+        // PayPal payment
+        const paypalForm = document.getElementById('paypalForm');
+        if (paypalForm) {
+            paypalForm.addEventListener('submit', (event) => {
+                const ticketType = document.querySelector('input[name="ticketType"]:checked').value;
+                const visitDate = visitDateInput.value;
+                const visitRange = visitForm.querySelector('select[name="VisitRange"]').value;
+
+                if (!visitDate || visitDate < todayStr) {
+                    alert('Please book a valid visit date before paying.');
+                    visitDateInput.value = todayStr;
+                    event.preventDefault();
+                    return false;
+                }
+
+                document.getElementById('ppTicketType').value = ticketType;
+                document.getElementById('ppVisitDate').value = visitDate;
+                document.getElementById('ppVisitRange').value = visitRange;
+            });
+        }
+    });
+</script>

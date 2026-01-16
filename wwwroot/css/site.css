@@ -1,0 +1,801 @@
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 20%, #f1d8b4, transparent 60%), radial-gradient(circle at 50% 70%, #f1d8b4, transparent 60%), radial-gradient(circle at 50% 50%, #f1d8b4, transparent 60%);
+    background-color: #f7ecd4;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**************************    Customer UI Elements    ************************/
+/* for search input and search button, go down. There is a section for it */
+.custom-large-title {
+    font-weight: 900;
+    font-size: 45px;
+    color: #659707;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.custom-title {
+    font-weight: 900;
+    font-size: xx-large;
+    color: #659707;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.custom-subtitle {
+    font-weight: 600;
+    font-size: large;
+    color: #659707;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+.normal-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: initial;
+    color: white;
+    background-color: #659707;
+    width: 150px;
+    height: 40px;
+    border-radius: 10px;
+    margin: 10px;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.normal-button:hover {
+    background-color: #65c707;
+}
+
+.reset-button,
+.cance-button {
+
+}
+
+.reset-button:hover,
+.cancel-button:hover {
+
+}
+
+/* Profile initial avatar */
+.avatar-badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: .5px;
+    color: #fff;
+    user-select: none;
+    background: conic-gradient(from 180deg at 50% 50%, #dc9720 0deg, #db5312 120deg, #f3c36a 240deg, #dc9720 360deg);
+    box-shadow: 0 6px 16px rgba(0,0,0,.25);
+}
+/**************************************************************************/
+
+
+
+
+
+
+/******************    Staff UI Buttons    *******************/
+.create-button,
+.edit-button,
+.delete-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: initial;
+    color: white;
+    background-color: #659707;
+    width: 150px;
+    height: 40px;
+    border-radius: 10px;
+    margin: 10px;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.create-button:hover,
+.edit-button:hover,
+.delete-button:hover {
+    background-color: #65c707;
+}
+/*************************************************************/
+
+
+
+
+
+
+/*****************************       Search functions      *******************************/
+/* From Uiverse.io by OnlyCodeChannel */
+.searchBox {
+    display: flex;
+    max-width: 800px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: floralwhite;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* soft shadow */
+    border-radius: 10px;
+    border: 3px solid #dc9720;
+    position: relative;
+}
+
+.searchButton {
+    color: white;
+    position: absolute;
+    right: 8px;
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-2, linear-gradient(90deg, #dc9720 0%, #db5312 100%));
+    border: 0;
+    border-radius: 5px;
+    display: inline-block;
+    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+}
+
+/*hover effect*/
+button:hover {
+    color: #fff;
+    background-color: #1A1A1A;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 10px 20px;
+    transform: translateY(-3px);
+}
+
+/*button pressing effect*/
+button:active {
+    box-shadow: none;
+    transform: translateY(0);
+}
+
+.searchInput {
+    border: none;
+    background: none;
+    outline: none;
+    color: black;
+    font-size: 18px;
+    padding: 24px 46px 24px 26px;
+}
+
+.dropdowns {
+    height: 75px; /* same as searchButton */
+    width: 250px;
+    color: black;
+    background: floralwhite;
+    border-radius: 10px;
+    border: 3px solid #dc9720;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* soft shadow */
+    padding: 0 12px; /* adjust so text stays centered */
+    font-size: 15px; /* same as searchButton */
+}
+/****************************************************************************************/
+
+
+
+
+/*******************************        Card        ***********************************/
+.card {
+    background-color: floralwhite;
+    border: 3px solid #dc9720;
+    border-radius: 1rem; /* rounded corners */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* soft shadow */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-body {
+    color: rgba(0,0,0,0.8);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+/*************************************************************************************/
+
+
+
+
+/*********************   Fancy Button   **********************/
+/* From Uiverse.io by eleventhday */
+.fancy {
+    background-color: #659707;
+    border: 2px solid #fff;
+    border-radius: 0;
+    box-sizing: border-box;
+    color: #000;
+    cursor: pointer;
+    display: inline-block;
+    float: right;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin: 0;
+    outline: none;
+    overflow: visible;
+    padding: 1.25em 2em;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    text-transform: none;
+    transition: all 0.3s ease-in-out;
+    user-select: none;
+    font-size: 25px;
+}
+
+.fancy::before {
+    content: " ";
+    width: 1.5625rem;
+    height: 2px;
+    background: white;
+    top: 50%;
+    left: 1.5em;
+    position: absolute;
+    transform: translateY(-50%);
+    transform-origin: center;
+    transition: background 0.3s linear, width 0.3s linear;
+}
+
+.fancy .text {
+    font-weight: bold;
+    font-size: 1.125em;
+    line-height: 1.33333em;
+    padding-left: 2em;
+    display: block;
+    text-align: left;
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+}
+
+.fancy .top-key {
+    height: 2px;
+    width: 12rem;
+    top: -2px;
+    left: 2rem;
+    position: absolute;
+    background: #659707;
+    transition: width 0.5s ease-out, left 0.3s ease-out;
+}
+
+.fancy .bottom-key-1 {
+    height: 2px;
+    width: 12rem;
+    right: 2rem;
+    bottom: -2px;
+    position: absolute;
+    background: #659707;
+    transition: width 0.5s ease-out, right 0.3s ease-out;
+}
+
+.fancy:hover {
+    color: #659707;
+    background: white;
+}
+
+.fancy:hover::before {
+    width: 0.9375rem;
+    background-color: #659707;
+}
+
+.fancy:hover .text {
+    color: #659707;
+    padding-left: 1.5em;
+}
+
+.fancy:hover .top-key {
+    left: -2px;
+    width: 0px;
+}
+
+.fancy:hover .bottom-key-1,
+.fancy:hover .bottom-key-2 {
+    right: 0;
+    width: 0;
+}
+/****************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*****************************     Tooltip       *******************************/
+.tooltip {
+    border-radius: 5px !important;
+}
+
+.tooltip-inner {
+    background-color: black;
+    color: #65c707;
+}
+/****************************************************************************/
+
+
+
+
+
+
+
+/*****************************       Map      *******************************/
+.map-card {
+    width: 70%;
+    background-color: #383737;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+}
+
+.map {
+    width: 95%;
+    height: 600px;
+    background-color: #e0d8c8 !important;
+    border-radius: 14px;
+}
+/****************************************************************************/
+
+
+
+
+
+/*****************************       Favorite Button      *******************************/
+/* From Uiverse.io by barisdogansutcu */
+.favorite-label {
+    background-color: floralwhite;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 15px 10px 10px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 10px;
+    color: black;
+}
+
+.favorite-input {
+    display: none;
+}
+
+.favorite-input:checked + .favorite-label svg {
+    fill: hsl(0deg 100% 50%);
+    stroke: hsl(0deg 100% 50%);
+    animation: heartButton 1s;
+}
+
+@keyframes heartButton {
+    0% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.3);
+    }
+
+    50% {
+        transform: scale(1);
+    }
+
+    75% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.favorite-input + .favorite-label .action {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+}
+
+.favorite-input + .favorite-label .action span {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+    transition: all .5s;
+}
+
+.favorite-input + .favorite-label .action span.option-1 {
+    transform: translate(0px,0%);
+    opacity: 1;
+}
+
+.favorite-input:checked + .favorite-label .action span.option-1 {
+    transform: translate(0px,-100%);
+    opacity: 0;
+}
+
+.favorite-input + .favorite-label .action span.option-2 {
+    transform: translate(0px,100%);
+    opacity: 0;
+}
+
+.favorite-input:checked + .favorite-label .action span.option-2 {
+    transform: translate(0px,0%);
+    opacity: 1;
+}
+/***************************************************************************************/
+
+
+
+
+/*****************************       Navigation Bar      *******************************/
+.navbar-custom {
+    background-color: #f7ecd4 !important;
+}
+
+.navbar-custom .nav-link {
+    color: #659707;
+    transition: color 0.3s ease;
+}
+
+.navbar-custom .nav-link:hover {
+    color: #65c707;
+}
+
+.navbar-custom .nav-link.active {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #65c707;
+}
+
+.greeting-hello {
+    font-weight: 600;
+    font-size: 18px;
+    color: #db7322;
+}
+
+.greeting-name {
+    font-weight: 600;
+    font-size: 22px;
+    color: #db7322;
+}
+/***************************************************************************************/
+
+
+
+
+
+
+/******************************        Banner      *************************************/
+.hero-container {
+    position: relative;
+    margin: 0 auto;
+}
+
+.hero-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: brightness(60%); /* fades/dims the image */
+}
+
+.hero-text {
+    position: absolute;
+    top: 50%; /* vertical center */
+    left: 50%; /* horizontal center */
+    transform: translate(-50%, -50%); /* without this, the element's top left would be at the center*/
+    color: white;
+    text-align: center;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+    font-size: 2.5rem;
+    font-weight: bold;
+    font-family: Century , sans-serif;
+    padding: 0 20px; /* prevent text from touching edges on small screens */
+}
+/**************************************************************************************/
+
+
+
+
+
+
+/******************************     Popup Window     *********************************/
+/* From Uiverse.io by kennyotsu-monochromia */
+
+/* overlay (full screen background) */
+.popup-overlay {
+    position: fixed;
+    inset: 0; /* shorthand for top:0; right:0; bottom:0; left:0 */
+    background: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center; /* center popup horizontally */
+    align-items: center; /* center popup vertically */
+    z-index: 1000;
+}
+
+.popup-window {
+    --black: #000000;
+    --ch-black: #141414;
+    --eer-black: #1b1b1b;
+    --night-rider: #2e2e2e;
+    --white: #ffffff;
+    --af-white: #f3f3f3;
+    --ch-white: #e1e1e1;
+    --tomato: #fa5656;
+    font-family: Helvetica, sans-serif;
+    padding: 25px;
+    display: flex;
+    width: 60%;
+    max-width: 1500px;
+    flex-direction: column;
+    align-items: start;
+    overflow: visible;
+    color: black;
+    background-color: floralwhite;
+    border: 3px solid #dc9720;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, .1);
+}
+
+/*----heading and description-----*/
+.popup-body {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    text-align: start;
+}
+
+.popup-title {
+    font-size: 2rem;
+    font-weight: 1200;
+}
+
+.popup-details {
+    margin-top: 10px;
+    font-size: 1.2rem;
+}
+
+/*-----close button------*/
+.close {
+    position: absolute;
+    right: 10px;
+    top: -70px;
+    color: var(--ch-white);
+    height: 30px;
+    width: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 60px;
+    font-weight: 300;
+    transition: .5s ease;
+}
+/******************************************************************************************/
+
+
+
+
+
+
+/***********************      Membership       **************************/
+/* From Uiverse.io by Yaya12085 */
+.plan {
+    border-radius: 16px;
+    box-shadow: 0 30px 30px -25px rgba(0, 38, 255, 0.205);
+    padding: 10px;
+    background-color: #dc9720;
+    color: #918069;
+    max-width: 900px;
+    font-size: 1.5rem;
+}
+
+.plan strong {
+    font-weight: 800;
+    color: #7b3f00;
+}
+
+.plan .inner {
+    align-items: center;
+    padding: 40px;
+    padding-top: 40px;
+    background-color: #f5dcc4;
+    border-radius: 12px;
+    position: relative;
+}
+
+.plan .pricing {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--gradient-2, linear-gradient(90deg, #f28e09 0%, #db5312 100%));
+    border-radius: 99em 0 0 99em;
+    display: flex;
+    align-items: center;
+    padding: 0.625em 0.75em;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #7b3f00;
+}
+
+.plan .pricing small {
+    color: #917e70;
+    font-size: 1em;
+    margin-left: 0.25em;
+}
+
+.plan .title {
+    font-weight: 600;
+    font-size: 2.5rem;
+    color: #7b3f00;
+    font-family:Century;
+}
+
+.plan .title + * {
+    margin-top: 0.75rem;
+}
+
+.plan .info + * {
+    margin-top: 1rem;
+}
+
+.plan .features {
+    display: flex;
+    flex-direction: column;
+}
+
+.plan .features li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.plan .features li + * {
+    margin-top: 1rem;
+}
+
+.plan .features .icon {
+    background-color: #ca661f;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+}
+
+.plan .features .icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.plan .features + * {
+    margin-top: 1.5rem;
+}
+
+.plan .action {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+.plan .button {
+    background: var(--gradient-2, linear-gradient(90deg, #dc9720 0%, #db5312 100%));
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.5rem;
+    text-align: center;
+    border: 0;
+    outline: 0;
+    width: 40%;
+    padding: 0.625em 0.75em;
+    text-decoration: none;
+    transition: background 0.4s ease;
+    box-shadow: 4px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.plan .button:hover, .plan .button:focus {
+    background: var(--gradient-2, linear-gradient(90deg, #dcc320 0%, #db7412 100%));
+}
+
+/******************************************************************************************/
+
+
+
+:root {
+    --amber: #f0ad4e; 
+    --amber-300: #f6c26b; 
+    --panel-bg: #fff;
+}
+
+.filter-slab {
+    background: var(--panel-bg);
+    border: 2px solid var(--amber-300);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.08);
+}
+
+    .filter-slab .form-select,
+    .filter-slab .form-control {
+        height: 56px;
+        border: 1px solid var(--amber-300);
+        border-radius: 12px;
+        box-shadow: none;
+    }
+
+        .filter-slab .form-select:focus,
+        .filter-slab .form-control:focus {
+            border-color: var(--amber);
+            outline: none;
+            box-shadow: 0 0 0 .25rem rgba(240,173,78,.25);
+        }
+
+.filter-btn {
+    height: 56px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+    .filter-btn .icon {
+        width: 18px;
+        height: 18px;
+        margin-left: 6px;
+        vertical-align: -2px;
+    }
+
+.filters-wrap {
+    margin-top: 18px;
+    margin-bottom: 28px;
+}

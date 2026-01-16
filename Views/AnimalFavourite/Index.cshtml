@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Zoolirante_Open_Minded.Models.AnimalFavourite>
+
+<h1>Customer's Preferred Animal </h1>
+<form asp-action="Index" method="get">
+    <div class="row">
+        <div class="col-3">
+            <input name="search" placeholder="Search..." class="form-control" />
+        </div>
+        <div class="col-3">
+            <button type="submit" class="btn btn-warning">Search</button>
+        </div>
+
+    </div>
+
+</form>
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Email</th>
+            <th>User ID</th>
+            <th>Favorite Animals</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var userGroup in Model.GroupBy(x => x.User))
+        {
+            var user = userGroup.Key;
+            if (user == null) continue; 
+
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@user.UserId</td>
+                <td>@string.Join(", ", userGroup.Select(a => a.Animal.Name))</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.UserId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@user.UserId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@user.UserId">Delete</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>

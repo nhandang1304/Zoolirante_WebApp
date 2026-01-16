@@ -1,0 +1,302 @@
+﻿@model IEnumerable<Zoolirante_Open_Minded.Models.Animal>
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    ViewData["Title"] = "Index";
+    var userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+}
+
+@if (role == "Admin")
+{
+    <a class="create-button" asp-controller="Animals" asp-action="Create">Add Animal</a>
+    <hr />
+}
+
+<form id="filterForm" asp-controller="Animals" asp-action="Index">
+    <div class="row mb-4">
+        <div class="col-3">
+            <select id="searchSpecies" name="searchSpecies" class="dropdowns" asp-items="ViewBag.speciesList">
+                <option value="">All Species</option>
+            </select>
+        </div>
+
+        <div class="col-3">
+            <select id="searchConservation" name="searchConservation" class="dropdowns" asp-items="ViewBag.conservation">
+                <option value="">All Conservation Status</option>
+            </select>
+        </div>
+
+        <div class="col-3">
+            <select id="searchRegion" name="searchRegion" class="dropdowns" asp-items="ViewBag.regionList">
+                <option value="">All Region</option>
+            </select>
+        </div>
+
+        <!-- Stylish search button -->
+        <!-- From Uiverse.io by OnlyCodeChannel -->
+        <div class="searchBox col-3">
+            <input class="searchInput" type="text" name="searchName" id="searchName" placeholder="Search animal..." value="@ViewBag.searchName">
+            <button class="searchButton" href="#">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 29 29" fill="none">
+                    <g clip-path="url(#clip0_2_17)">
+                        <g filter="url(#filter0_d_2_17)">
+                            <path d="M23.7953 23.9182L19.0585 19.1814M19.0585 19.1814C19.8188 18.4211 20.4219 17.5185 20.8333 16.5251C21.2448 15.5318 21.4566 14.4671 21.4566 13.3919C21.4566
+                                12.3167 21.2448 11.252 20.8333 10.2587C20.4219 9.2653 19.8188 8.36271 19.0585 7.60242C18.2982 6.84214 17.3956 6.23905 16.4022 5.82759C15.4089 5.41612 14.3442
+                                5.20435 13.269 5.20435C12.1938 5.20435 11.1291 5.41612 10.1358 5.82759C9.1424 6.23905 8.23981 6.84214 7.47953 7.60242C5.94407 9.13789 5.08145 11.2204 5.08145
+                                13.3919C5.08145 15.5634 5.94407 17.6459 7.47953 19.1814C9.01499 20.7168 11.0975 21.5794 13.269 21.5794C15.4405 21.5794 17.523 20.7168 19.0585 19.1814Z"
+                            stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"></path>
+                        </g>
+                    </g>
+                    <defs>
+                        <filter id="filter0_d_2_17" x="-0.418549" y="3.70435" width="29.7139" height="29.7139" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+                            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"></feColorMatrix>
+                            <feOffset dy="4"></feOffset>
+                            <feGaussianBlur stdDeviation="2"></feGaussianBlur>
+                            <feComposite in2="hardAlpha" operator="out"></feComposite>
+                            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"></feColorMatrix>
+                            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2_17"></feBlend>
+                            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2_17" result="shape"></feBlend>
+                        </filter>
+                        <clipPath id="clip0_2_17">
+                            <rect width="28.0702" height="28.0702" fill="white" transform="translate(0.403503 0.526367)"></rect>
+                        </clipPath>
+                    </defs>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+</form>
+
+<script>
+    const form = document.getElementById('filterForm');
+
+    // Trigger form submit whenever any dropdown changes
+    document.getElementById('searchSpecies').addEventListener('change', () => form.submit());
+    document.getElementById('searchConservation').addEventListener('change', () => form.submit());
+    document.getElementById('searchRegion').addEventListener('change', () => form.submit());
+</script>
+
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">No Animal found.</div>
+}
+else
+{
+    <div class="row g-4 mx-0">
+        @foreach (var item in Model)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 animal-card" data-animal-id="@item.AnimalId" data-habitat="@item.Habitat" data-description="@item.Description">
+                    <img class="card-img-top " style="width:100%; height:450px;" src="@item.ImageUrl" alt="@item.Name">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <h5 class="col card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
+
+                            <!-- if user is logged in -->
+                            @if (userId != null)
+                            {
+                                <!-- Favorite button -->
+                                <div class="col-auto mb-2">
+                                    <!-- From Uiverse.io by barisdogansutcu -->
+                                    <input type="checkbox" class="favorite-input" name="animalId" id="favorite-@item.AnimalId">
+                                    <label for="favorite-@item.AnimalId" class="favorite-label">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                        </svg>
+                                        <div class="action">
+                                            <span class="option-1">Add to Favorites</span>
+                                            <span class="option-2">Added to Favorites</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            }
+                            else
+                            {
+                                <!-- Favorite button -->
+                                <div class="col-auto mb-2">
+                                    <a class="favorite-label text-decoration-none" asp-controller="Users" asp-action="Login">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                        </svg>
+                                        <div class="action">
+                                            <span class="option-1">Add to Favorites</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                        <hr style="border:2px solid #dc9720;"></hr>
+                        <p class="card-text mb-1">Species: @Html.DisplayFor(modelItem => item.Species)</p>
+                        <p class="card-text mb-1">Conservation Status: @Html.DisplayFor(modelItem => item.ConservationStatus)</p>
+                        <p class="card-text mb-1">Region: @Html.DisplayFor(modelItem => item.Region)</p>
+                        @if (role == "Admin")
+                        {
+                            <a class="edit-button" asp-controller="Animals" asp-action="Edit" asp-route-id="@item.AnimalId">Edit Details</a>
+                            <a class="delete-button" asp-controller="Animals" asp-action="Delete" asp-route-id="@item.AnimalId">Delete Animal</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Popup window for animal details -->
+    <div id="animal-popup" class="popup-overlay" style="display:none;">
+        <div class="popup-window">
+            <div class="popup-body">
+                <div class="row g-0">
+                    <div class="col me-4">
+                        <img id="popup-image" style="height:500px;" src="" alt="Image of zoo animal">
+                    </div>
+                    <div class="col">
+                        <span class="close mb-4">&times;</span>
+                        <div class="row align-items-center mt-4 mb-1">
+                            <h3 id="popup-name" class="col popup-title"></h3>
+
+                            <!-- Favorite button -->
+                            <div class="col mb-2" style="width:450px">
+                                <!-- From Uiverse.io by barisdogansutcu -->
+                                <input type="checkbox" class="favorite-input" id="popup-favorite">
+                                <label for="popup-favorite" class="favorite-label" style="width:200px">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                    <div class="action">
+                                        <span class="option-1">Add to Favorites</span>
+                                        <span class="option-2">Added to Favorites</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                        </div>
+                        <hr style="border:5px solid #dc9720;"></hr>
+                        <div class="popup-details">
+                            <p id="popup-species"></p>
+                            <p id="popup-conservation"></p>
+                            <p id="popup-region"></p>
+                            <p id="popup-habitat"></p>
+                            <p id="popup-description"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const popup = document.getElementById('animal-popup');
+        const popupName = document.getElementById('popup-name');
+        const popupImage = document.getElementById('popup-image');
+        const popupSpecies = document.getElementById('popup-species');
+        const popupConservation = document.getElementById('popup-conservation');
+        const popupRegion = document.getElementById('popup-region');
+        const popupHabitat = document.getElementById('popup-habitat');
+        const popupDescription = document.getElementById('popup-description');
+        const closeBtn = popup.querySelector('.close');
+        const popupFavorite = document.getElementById('popup-favorite');
+
+        let currentCardFavorite = null; // keep track of the clicked card’s favorite
+
+        async function loadUserFavorites() {
+            const res = await fetch('/api/AnimalFavourite/Favourite');
+            if (res.ok) {
+                const favIds = await res.json();
+                favIds.forEach(id => {
+                    const checkbox = document.getElementById(`favorite-${id}`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadUserFavorites);
+
+        // Toggle favorites
+        async function toggleFavorite(animalId, isChecked) {
+            const response = await fetch('/api/AnimalFavourite/Toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ animalId: animalId })
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    // redirect to login when logged out
+                    window.location.href = '@Url.Action("Login", "Users")';
+                } else {
+                    console.error('Error toggling favorite:', response.statusText);
+                }
+            }
+        }
+
+        document.querySelectorAll('.animal-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // If the click was on the favorite input or its label, do nothing
+                if (e.target.closest('.favorite-input') || e.target.closest('.favorite-label')) {
+                    return; // ignore click
+                }
+
+                popupName.textContent = card.querySelector('.card-title').textContent;
+                popupImage.src = card.querySelector('.card-img-top').src;
+                popupSpecies.textContent = card.querySelector('.card-text:nth-of-type(1)').textContent;
+                popupConservation.textContent = card.querySelector('.card-text:nth-of-type(2)').textContent;
+                popupRegion.textContent = card.querySelector('.card-text:nth-of-type(3)').textContent;
+                popupHabitat.textContent = "Habitat: " + card.dataset.habitat;
+                popupDescription.innerHTML = "Description:<br>" + card.dataset.description;
+
+                // find the favorite checkbox inside this card
+                currentCardFavorite = card.querySelector('.favorite-input');
+
+                // sync popup state with card only if it exists
+                if (currentCardFavorite) {
+                    popupFavorite.checked = currentCardFavorite.checked;
+                } else {
+                    // logged out: always unchecked in popup
+                    popupFavorite.checked = false;
+                }
+
+                popup.style.display = 'flex';
+            });
+        });
+
+
+        document.querySelectorAll('.favorite-input').forEach(chk => {
+            chk.addEventListener('change', async (e) => {
+                const animalId = e.target.id.replace('favorite-', '');
+                await toggleFavorite(animalId, e.target.checked);
+            });
+        });
+
+        // Sync popup favorite back to card when toggled
+        popupFavorite.addEventListener('change', async () => {
+            if (currentCardFavorite)
+            {
+                currentCardFavorite.checked = popupFavorite.checked;
+                const animalId = currentCardFavorite.id.replace('favorite-', '');
+                await toggleFavorite(animalId, popupFavorite.checked);
+            }
+            else
+            {
+            // redirect to login when logged out
+            window.location.href = '@Url.Action("Login", "Users")';
+            }
+        });
+
+        closeBtn.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) popup.style.display = 'none';
+        });
+    </script>
+
+}

@@ -1,0 +1,151 @@
+﻿@model Zoolirante_Open_Minded.Models.User
+@{
+    ViewData["Title"] = "Create an Account";
+}
+
+<style>
+    /* page-scoped styles only */
+    .create-wrap {
+        max-width: 900px;
+        margin: 24px auto 64px;
+    }
+
+    .hero-title {
+        font-weight: 800;
+        font-size: 2.25rem;
+        color: #2e7d32;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .subtle {
+        color: #6c757d;
+    }
+
+    .card-glass {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,.06);
+        box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    .input-lg {
+        height: 48px;
+        font-size: 1.05rem;
+    }
+
+    .btn-green {
+        background: #6db400;
+        border-color: #6db400;
+        color: #fff;
+        font-weight: 700;
+    }
+
+        .btn-green:hover {
+            background: #5da000;
+            border-color: #5da000;
+            color: #fff;
+        }
+
+    /* escape Razor on media */
+    @@media (min-width: 1400px) {
+        .create-wrap
+
+    {
+        max-width: 1000px;
+    }
+
+    }
+</style>
+
+
+}
+<div class="create-wrap">
+    <!-- Collapsible header -->
+    <h1 class="hero-title" data-bs-toggle="collapse" data-bs-target="#createCollapse" aria-expanded="true" aria-controls="createCollapse">
+        Create an Account
+    </h1>
+    <div class="subtle mb-4">Click the title to show / hide the form</div>
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div id="createCollapse" class="collapse show">
+        <div class="card card-glass p-4">
+
+            <form asp-controller="Users" asp-action="Register" method="post" id="createForm">
+                @Html.AntiForgeryToken()
+
+                <!-- Names (UI only) -->
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">First name</label>
+                        <input type="text" class="form-control input-lg" id="firstName" placeholder="First name" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Middle name (optional)</label>
+                        <input type="text" class="form-control input-lg" id="middleName" placeholder="Middle name" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Last name</label>
+                        <input type="text" class="form-control input-lg" id="lastName" placeholder="Last name" />
+                    </div>
+                </div>
+
+                <!-- Contact (UI only, not persisted unless you take the optional path below) -->
+                <div class="row g-3 mt-1">
+                    <div class="col-md-4">
+                        <label class="form-label">Street No.</label>
+                        <input type="text" class="form-control input-lg" id="streetNo" placeholder="e.g. 123" />
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Best contact phone</label>
+                        <input type="tel" class="form-control input-lg" id="phone" placeholder="e.g. 0400 123 456" />
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- Bound fields (what your controller/models already expect) -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" type="email" class="form-control input-lg" placeholder="Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PasswordHash" class="form-label">Password</label>
+                    <input asp-for="PasswordHash" type="password" class="form-control input-lg" placeholder="Password" />
+                    <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                </div>
+
+                <!-- Hidden FullName that we’ll populate from first/middle/last -->
+                <input type="hidden" asp-for="FullName" id="fullNameBound" />
+                <input type="hidden" name="returnUrl" value="~/Home/Index" />
+
+
+                <div class="d-flex gap-2 mt-2">
+                    <button type="submit" class="btn btn-green px-4">Create Account</button>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-link">Back to Home</a>
+                </div>
+            </form>
+     
+            <div class="small subtle mt-3">
+                Note: First/Middle/Last, Street No. and Phone are collected for a smoother setup.
+                With the current data model only <strong>Full Name, Email and Password</strong> are stored.
+                See the optional note below if you want to persist Phone/Street now.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    // Build FullName from the 3 fields before submit (no backend changes)
+    document.getElementById('createForm').addEventListener('submit', function () {
+      const first = (document.getElementById('firstName').value || '').trim();
+      const middle = (document.getElementById('middleName').value || '').trim();
+      const last = (document.getElementById('lastName').value || '').trim();
+      const full = [first, middle, last].filter(Boolean).join(' ');
+      document.getElementById('fullNameBound').value = full || (first || last); // fallback
+    });
+</script>

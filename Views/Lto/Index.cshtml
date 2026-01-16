@@ -1,0 +1,17 @@
+﻿@model Zoolirante_Open_Minded.ViewModels.LtoSummaryVM
+@{
+    ViewData["Title"] = "Fill From LTO";
+}
+<div class="container mt-3">
+    <h2>Fill From LTO</h2>
+    <div class="alert alert-light border rounded-3 p-3" style="border-color:#f6c26b">
+        <div class="row g-3">
+            <div class="col-md-4"><strong>No. of Locations</strong><div>@Model.NumGroups</div></div>
+            <div class="col-md-4"><strong>No. of Articles</strong><div>@Model.NumArticles</div></div>
+            <div class="col-md-4"><strong>Total EA</strong><div>@Model.TotalEA</div></div>
+        </div>
+        <a class="btn btn-warning mt-3" asp-action="Groups" asp-route-Category="@Model.Filter.Category" asp-route-Search="@Model.Filter.Search">
+            Proceed to Picking
+        </a>
+    </div>
+</div>

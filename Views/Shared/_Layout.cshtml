@@ -1,0 +1,217 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var http = HttpContextAccessor.HttpContext!;
+    bool isManager = http.User?.IsInRole("Manager") == true || http.User?.IsInRole("Admin") == true;
+    var sessionRole = http.Session.GetString("Role") ?? http.Session.GetString("UserRole");
+    if (!isManager && !string.IsNullOrEmpty(sessionRole))
+    {
+        isManager =
+            sessionRole.Equals("Manager", StringComparison.OrdinalIgnoreCase) ||
+            sessionRole.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+    }
+}
+
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+    var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName");
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TempProject</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://kit.fontawesome.com/2e78690260.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-custom navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow align-items-center">
+            <div class="container d-flex align-items-center">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img class="d-inline-block align-content-center" src="/images/Zoolirante_logo.png" alt="Zoolirante Logo" width="150" height="80" />
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto align-items-center">
+                        <li class="nav-item mx-2">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Home">
+                                <i class="fa-solid fa-house fa-2x"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <a class="nav-link" asp-area="" asp-controller="Animals" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Animals">
+                                <i class="fa-solid fa-paw fa-2x"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <a class="nav-link" asp-area="" asp-controller="Events" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Events">
+                                <i class="fa-solid fa-calendar-days fa-2x"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <a class="nav-link" asp-area="" asp-controller="Merchandises" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Merchandises">
+                                <i class="fa-solid fa-cart-shopping fa-2x"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item ms-2">
+                            @if (userId != null)
+                            {
+                                if (role == "Admin")
+                                {
+                                    <a class="nav-link ms-5 me-2" asp-controller="Users" asp-action="Details" asp-route-id="@userId" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Manage Account">
+                                        <span class="d-flex align-items-center">
+                                            <i class="fa-solid fa-user fa-2x"></i>
+                                            <span>
+                                                <span class="greeting-hello">Hello,</span><br />
+                                                <span class="greeting-name">@fullName! (Manager)</span>
+                                            </span>
+                                        </span>                                    
+                                    </a>
+                                }
+                               else
+                               {
+                                    <a class="nav-link ms-5 me-2" asp-controller="Users" asp-action="Details" asp-route-id="@userId" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Manage Account">
+                                        <span class="d-flex align-items-center">
+                                            <i class="fa-solid fa-user fa-2x"></i>
+                                            <span>
+                                                <span class="greeting-hello">Hello,</span><br />
+                                                <span class="greeting-name">@fullName!</span>
+                                            </span>
+                                        </span>
+                                    </a>
+                               }
+                            }
+                            else
+                            {
+                                <a class="nav-link" asp-controller="Users" asp-action="Login" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Login">
+                                    <span class="d-flex align-items-center">
+                                        <i class="fa-solid fa-user fa-2x"></i>
+                                        <span style="font-size:20px; font-weight:bold">Login here</span>
+                                    </span>
+                                </a>
+                            }
+                        </li>
+                        @if (Context.Session.GetInt32("UserId") != null)
+                        {
+                           
+                                if (role == "Admin")
+                                {
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link" asp-controller="Memberships" asp-action="ShowDetails" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Manage Membership">
+                                        <i class="fa-solid fa-user-plus fa-2x"></i>
+                                    </a>
+                                </li>
+                                }
+                                else
+                                {                            
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link" asp-controller="Memberships" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Manage Membership">
+                                        <i class="fa-solid fa-user-plus fa-2x"></i>
+                                    </a>
+                                </li>
+                            }
+                            if (role == "Admin")
+                            {
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link" asp-controller="AnimalFavourite" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Manage Favorite Animals">
+                                        <i class="fa-solid fa-heart fa-2x"></i>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link" asp-controller="AnimalFavourite" asp-action="UserFavorites" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Your Favorite Animals">
+                                        <i class="fa-solid fa-heart fa-2x"></i>
+                                    </a>
+                                </li>
+                            }
+                            if (role == "Admin")
+                            {
+                            <li class="nav-item mx-2">
+                                <a class="nav-link" asp-controller="EntranceTickets" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Manage Tickets">
+                                    <i class="fa-solid fa-ticket fa-2x"></i>
+                                </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link" asp-controller="EntranceTickets" asp-action="Buy" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Buy Tickets">
+                                        <i class="fa-solid fa-ticket fa-2x"></i>
+                                    </a>
+                                </li>
+                            }
+                            if (role == "Admin")
+                            {
+                                <li class="nav-item mx-2">
+                                    <a hidden class="nav-link" asp-controller="EntranceTickets" asp-action="History" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Visiting History">
+                                        <i hidden class="fa-solid fa-suitcase fa-2x"></i>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link" asp-controller="EntranceTickets" asp-action="History" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Visiting History">
+                                        <i class="fa-solid fa-suitcase fa-2x"></i>
+                                    </a>
+                                </li>
+                            }
+
+                            <li class="nav-item mx-2">
+                                <a class="nav-link" asp-controller="Orders" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Order History">
+                                    <i class="fa-solid fa-clock-rotate-left fa-2x"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="hero-container text-center mb-4">
+            <img src="/images/Zoolirante_banner.jpeg" alt="Zoolirante Banner" class="hero-image">
+            <div class="hero-text">
+                <h1 style="font-size: 80px; font-weight:900">@ViewData["BannerText"]</h1>
+            </div>
+        </div>
+
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

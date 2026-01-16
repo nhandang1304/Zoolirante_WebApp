@@ -1,0 +1,107 @@
+﻿@model Zoolirante_Open_Minded.ViewModels.CardPaymentVM
+@{
+    ViewData["Title"] = "Pay with Card (Demo)";
+    var msg = TempData["Msg"] as string;
+}
+
+<h2>Pay with Visa/MasterCard (Demo)</h2>
+
+@if (!string.IsNullOrEmpty(msg))
+{
+    <div class="alert alert-success">
+        @msg
+        <br />
+        Back to Home in <strong><span id="redirect-seconds">5</span>s</strong>...
+    </div>
+    <script>
+        (function () {
+            var sec = 5;
+            var el = document.getElementById('redirect-seconds');
+            var t = setInterval(function () {
+                sec--;
+                if (el) el.textContent = sec;
+                if (sec <= 0) {
+                    clearInterval(t);
+                    window.location.href = '@Url.Action("Index", "Home")';
+                }
+            }, 1000);
+        })();
+    </script>
+}
+
+<form asp-controller="Payments" asp-action="Card" method="post" id="pay-form" novalidate>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+   
+    <input type="hidden" asp-for="OrderId" />
+    <input type="hidden" asp-for="Purpose" />
+    <input type="hidden" asp-for="TicketId" />
+    <input type="hidden" asp-for="Qty" />
+    <input type="hidden" asp-for="VisitDate" />
+    
+    @if (Model?.Purpose == "ticket")
+    {
+        <div class="mb-3">
+            <label class="form-label">Ticket Type</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" asp-for="TicketType" id="typeAdult" value="Adult"
+                       checked="@(Model.TicketType != "Child")" />
+                <label class="form-check-label" for="typeAdult">Adult (A$30)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" asp-for="TicketType" id="typeChild" value="Child"
+                       checked="@(Model.TicketType == "Child")" />
+                <label class="form-check-label" for="typeChild">Child (A$20)</label>
+            </div>
+            <span asp-validation-for="TicketType" class="text-danger"></span>
+        </div>
+    }
+
+    <div class="mb-3">
+        <label asp-for="CardholderName" class="form-label"></label>
+        <input asp-for="CardholderName" class="form-control" autocomplete="cc-name" />
+        <span asp-validation-for="CardholderName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CardNumber" class="form-label"></label>
+        <input asp-for="CardNumber" class="form-control"
+               inputmode="numeric" autocomplete="cc-number"
+               maxlength="19" placeholder="4111111111111111" />
+        <span asp-validation-for="CardNumber" class="text-danger"></span>
+        <div class="form-text">Demo only, no real charge. Don’t use real cards.</div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-6 col-md-3">
+            <label asp-for="ExpMonth" class="form-label"></label>
+            <input asp-for="ExpMonth" class="form-control" inputmode="numeric" placeholder="MM" />
+            <span asp-validation-for="ExpMonth" class="text-danger"></span>
+        </div>
+        <div class="col-6 col-md-3">
+            <label asp-for="ExpYear" class="form-label"></label>
+            <input asp-for="ExpYear" class="form-control" inputmode="numeric" placeholder="YYYY" />
+            <span asp-validation-for="ExpYear" class="text-danger"></span>
+        </div>
+        <div class="col-12 col-md-3">
+            <label asp-for="Cvv" class="form-label"></label>
+            <input asp-for="Cvv" class="form-control" inputmode="numeric" autocomplete="cc-csc" maxlength="4" />
+            <span asp-validation-for="Cvv" class="text-danger"></span>
+        </div>
+        <div class="col-12 col-md-3">
+            <label asp-for="BillingZip" class="form-label"></label>
+            <input asp-for="BillingZip" class="form-control" autocomplete="postal-code" />
+            <span asp-validation-for="BillingZip" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Submit (Demo)</button>
+        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">← Back to Home</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

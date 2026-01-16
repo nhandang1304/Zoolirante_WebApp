@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Zoolirante_Open_Minded.Models.Membership>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+    var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName");
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+}
+@{
+    ViewData["Title"] = "Index";
+}
+@if (role == "Admin"){
+
+    <h1>Customer Membership </h1>
+}
+else
+{
+    <h1>Your Membership </h1>
+}
+
+<form asp-action="ShowDetails" method="post">
+    <div class="row">
+        <div class="col-3">
+            <input name="search" placeholder="Search..." class="form-control" />
+        </div>
+        <div class="col-3">
+            <button type="submit" class="btn btn-warning">Search</button>
+        </div>
+        
+    </div>
+    
+</form>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.User.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MembershipId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+          
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.UserId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MembershipId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+               
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.MembershipId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.MembershipId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.MembershipId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
